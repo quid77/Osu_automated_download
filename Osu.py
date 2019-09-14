@@ -100,7 +100,6 @@ class TestClass(unittest.TestCase):
                             list_of_beatmapsets.append(beatmapset_name)
                             download_button = ancestor.find_element_by_xpath(".//i[@class='fas fa-lg fa-download']")
                             try:
-                                # NEED TO TRY DIFFERENT CLICK METHODS
                                 driver.execute_script("arguments[0].click();", download_button)  # bypass to "click()" element, not applicable in real testing
                             except (TimeoutException, StaleElementReferenceException):
                                 print("One of the elements couldn't be downloaded")
