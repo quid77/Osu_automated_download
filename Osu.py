@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import unittest
@@ -31,10 +32,13 @@ beatmapsets_to_search = 15000  # number of beatmapsets to examine if they are su
 Category = "Graveyard"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
 Favourites = 4  # number of times beatmapset has been favourited by different players (how liked it is)
 
+
 class TestClass(unittest.TestCase):
 
     number_of_downloaded_beatmapsets = 0  # for possible later use in tearDownClass
     Category_nr = eval("Categories." + Category + ".value")
+    page_scroll_times = 1
+    list_of_beatmapsets = []  # list of beatmapsets which have at least one beatmap with certain difficulty
 
     @classmethod
     def setUpClass(cls):   # setUpClass runs once for ALL tests instead of EVERY
@@ -53,8 +57,8 @@ class TestClass(unittest.TestCase):
             driver.find_element_by_xpath('//a[contains(@class,"js-user-login--menu")]').click()
         except (TimeoutException, NoSuchElementException):
             print("Couldn't find or load \"Login\" button on the website?")
-        driver.find_element_by_xpath("//input[@name='username']").send_keys("tmpname222")
-        driver.find_element_by_xpath("//input[@name='password']").send_keys("ffsjustletme")
+        driver.find_element_by_xpath("//input[@name='username']").send_keys("whythisagain77")
+        driver.find_element_by_xpath("//input[@name='password']").send_keys("1234512345")
         driver.find_element_by_xpath("//span[@class='fas fa-fw fa-sign-in-alt']").click()
         try:
             driver.find_element_by_xpath(
@@ -83,59 +87,64 @@ class TestClass(unittest.TestCase):
         # element_number = driver.find_elements_by_xpath("//i[@class='fas fa-lg fa-download']")
         element_number = driver.find_elements_by_xpath("//div[@class='beatmapset-panel__difficulties']")
         WebDriverWait(driver, 3).until(lambda _: len(element_number) >= 16)
-        time.sleep(2)
-
-        page_scroll_times = 1
-        list_of_beatmapsets = []  # list of beatmapsets which have at least one beatmap with certain difficulty
+        time.sleep(3)
         for x in range(round(beatmapsets_to_search/2)):
             try:
                 TestClass.search_for_beatmapsets()
+                print("wtf")
             except (TimeoutException, StaleElementReferenceException, NoSuchElementException):  # scrolls to the last element if error/timeout occurs mid-download
+                print("error")
                 TestClass.reload_and_continue()
-        TestClass.number_of_downloaded_beatmapsets += len(list_of_beatmapsets)
+        TestClass.number_of_downloaded_beatmapsets += len(TestClass.list_of_beatmapsets)
         print("Number of downloaded beatmapsets: %s" % TestClass.number_of_downloaded_beatmapsets)
 
     # Site is only capable of loading approx. 32 items at the same time (16 pairs), each pair is 970x205px (width x height)
     # if more than 16 pairs are loaded the oldest (top) pair in our list unloads to make space for a new one
 
+    @classmethod
     def search_for_beatmapsets(self):
         driver = self.driver
-        nonlocal page_scroll_times, list_of_beatmapsets
         ancestor = driver.find_elements_by_xpath(
             "//div[@class='beatmapset-panel__difficulties']//div[@data-stars>'%s']//ancestor::div[6]" % beatmap_difficulty)  # backtrack to the whole element, not just single beatmap (from this level i can easily navigate to buttons like "download" or "play")
         for each_element in ancestor:
-            beatmapset_name = each_element.find_element_by_xpath(
-                ".//*[contains(@class,'u-ellipsis-overflow b')]").text  # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
-            if beatmapset_name not in list_of_beatmapsets:  # because some songs can have more than one beatmap above 4.5 stars i don't want to include/download them twice
-                if int(each_element.find_element_by_xpath(
-                        ".//*[contains(@title,'Favourites:')]//span[@class='beatmapset-panel__count-number']").text) >= Favourites:
-                    list_of_beatmapsets.append(beatmapset_name)
-                    download_button = each_element.find_element_by_xpath(".//i[@class='fas fa-lg fa-download']")
+            beatmapset_name = each_element.find_element_by_xpath(".//*[contains(@class,'u-ellipsis-overflow b')]").text   # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
+            if beatmapset_name not in TestClass.list_of_beatmapsets:  # because some songs can have more than one beatmap above 4.5 stars i don't want to include/download them twice
+                how_liked = each_element.find_element_by_xpath(".//*[contains(@title,'Favourites:')]//span[@class='beatmapset-panel__count-number']").text
+                if int(how_liked) >= Favourites:
+                    TestClass.list_of_beatmapsets.append(beatmapset_name)
+                    # download_button = each_element.find_element_by_xpath(".//i[@class='fas fa-lg fa-download']")
+                    download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]")#.get_attribute('href')
                     try:
-                        driver.execute_script("arguments[0].click();",
-                                              download_button)  # bypass to "click()" element, not applicable in real testing
+                        # print(download_button)
+                        # ActionChains(driver).key_down(Keys.CONTROL).click(download_button).key_up(Keys.CONTROL).build().perform()  # runs in foreground
+                        download_button.send_keys(Keys.CONTROL + Keys.RETURN)
+                        # driver.execute_script("window.open('%s', 'new_window')" % download_button)  # doesnt switch focus back
+                        # driver.execute_script("arguments[0].click();", download_button)  # bypass to "click()" element, not applicable in real testing
+                        # time.sleep(1)  # to avoid "too many requests error 429"
                     except (TimeoutException, StaleElementReferenceException):
                         print("One of the elements couldn't be downloaded")
                         TestClass.number_of_downloaded_beatmapsets -= 1
-                        list_of_beatmapsets.pop()
-                    print(list_of_beatmapsets)
-        print("page scroll times %s" % page_scroll_times)
+                        TestClass.list_of_beatmapsets.pop()
+                    print(TestClass.list_of_beatmapsets)
+        print("page scroll times %s" % TestClass.page_scroll_times)
         driver.execute_script("window.scrollBy(0,205)", "")  # 205 is the exact height of one pair of elements
-        page_scroll_times += 1
+        TestClass.page_scroll_times += 1
 
     @classmethod
     def reload_and_continue(self):
         driver = self.driver
-        nonlocal page_scroll_times, each_element
         downloads_done()
         driver.refresh()
         driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
-        print("Refreshing - page scroll times: %s" % page_scroll_times)
-        WebDriverWait(driver, 5).until(lambda _: len(element_number) >= 16)
-        for y in range(page_scroll_times):
-            element_number = driver.find_elements_by_xpath("//div[@class='beatmapsets__item']")
+        print("Refreshing - page scroll times: %s" % TestClass.page_scroll_times)
+        element_number = driver.find_elements_by_xpath("//div[@class='beatmapsets__item']")
+        try:
+            WebDriverWait(driver, 5).until(lambda _: len(element_number) >= 16)
+        except TimeoutException:
+            pass
+        for y in range(TestClass.page_scroll_times):
             try:
-                WebDriverWait(each_element, 0.5).until(lambda _: len(element_number) == 32)
+                WebDriverWait(element_number, 0.3).until(lambda _: len(element_number) >= 26)
             except TimeoutException:
                 pass
             finally:
