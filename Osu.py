@@ -91,9 +91,7 @@ class TestClass(unittest.TestCase):
         for x in range(round(beatmapsets_to_search/2)):
             try:
                 TestClass.search_for_beatmapsets()
-                print("wtf")
             except (TimeoutException, StaleElementReferenceException, NoSuchElementException):  # scrolls to the last element if error/timeout occurs mid-download
-                print("error")
                 TestClass.reload_and_continue()
         TestClass.number_of_downloaded_beatmapsets += len(TestClass.list_of_beatmapsets)
         print("Number of downloaded beatmapsets: %s" % TestClass.number_of_downloaded_beatmapsets)
@@ -115,7 +113,6 @@ class TestClass(unittest.TestCase):
                     # download_button = each_element.find_element_by_xpath(".//i[@class='fas fa-lg fa-download']")
                     download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]")#.get_attribute('href')
                     try:
-                        # print(download_button)
                         # ActionChains(driver).key_down(Keys.CONTROL).click(download_button).key_up(Keys.CONTROL).build().perform()  # runs in foreground
                         download_button.send_keys(Keys.CONTROL + Keys.RETURN)
                         # driver.execute_script("window.open('%s', 'new_window')" % download_button)  # doesnt switch focus back
