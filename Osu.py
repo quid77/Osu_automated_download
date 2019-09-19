@@ -29,7 +29,7 @@ class Categories(Enum):
 download_path = "H:\\uTORRENT\\OSU!songs"  # directory for downloads
 beatmap_difficulty = 4.5  # difficulty above which beatmapsets containing said beatmap will be downloaded
 beatmapsets_to_search = 15000  # number of beatmapsets to examine if they are suitable for download
-Category = "Graveyard"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
+Category = "Ranked"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
 Favourites = 4  # number of times beatmapset has been favourited by different players (how liked it is)
 
 
@@ -57,8 +57,8 @@ class TestClass(unittest.TestCase):
             driver.find_element_by_xpath('//a[contains(@class,"js-user-login--menu")]').click()
         except (TimeoutException, NoSuchElementException):
             print("Couldn't find or load \"Login\" button on the website?")
-        driver.find_element_by_xpath("//input[@name='username']").send_keys("whythisagain77")
-        driver.find_element_by_xpath("//input[@name='password']").send_keys("1234512345")
+        driver.find_element_by_xpath("//input[@name='username']").send_keys("tmpname222")  # tmpname222 whythisagain77
+        driver.find_element_by_xpath("//input[@name='password']").send_keys("ffsjustletme")   # ffsjustletme 1234512345
         driver.find_element_by_xpath("//span[@class='fas fa-fw fa-sign-in-alt']").click()
         try:
             driver.find_element_by_xpath(
@@ -84,7 +84,6 @@ class TestClass(unittest.TestCase):
             print("Couldn't locate \"%s\" category, trying alternative method\nContinuing" % Category)
 
         # Wait until website loads and sorts at least first 16 elements before proceeding with downloads
-        # element_number = driver.find_elements_by_xpath("//i[@class='fas fa-lg fa-download']")
         element_number = driver.find_elements_by_xpath("//div[@class='beatmapset-panel__difficulties']")
         WebDriverWait(driver, 3).until(lambda _: len(element_number) >= 16)
         time.sleep(3)
@@ -111,13 +110,15 @@ class TestClass(unittest.TestCase):
                 if int(how_liked) >= Favourites:
                     TestClass.list_of_beatmapsets.append(beatmapset_name)
                     # download_button = each_element.find_element_by_xpath(".//i[@class='fas fa-lg fa-download']")
-                    download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]")#.get_attribute('href')
+                    download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]").get_attribute('href')
                     try:
-                        # ActionChains(driver).key_down(Keys.CONTROL).click(download_button).key_up(Keys.CONTROL).build().perform()  # runs in foreground
-                        download_button.send_keys(Keys.CONTROL + Keys.RETURN)
+                        # ActionChains(driver).key_down(Keys.CONTROL).click(download_button).key_up(Keys.CONTROL).perform()  # runs in foreground + arbitrary scrolling
+                        # download_button.send_keys(Keys.CONTROL + Keys.RETURN)  # causes arbitrary page scrolling
                         # driver.execute_script("window.open('%s', 'new_window')" % download_button)  # doesnt switch focus back
+                        # driver.switch_to.window(driver.window_handles[0])  # causes to run in foreground...
+                        driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  # doesnt switch focus back
                         # driver.execute_script("arguments[0].click();", download_button)  # bypass to "click()" element, not applicable in real testing
-                        # time.sleep(1)  # to avoid "too many requests error 429"
+                        time.sleep(1.5)  # to avoid "too many requests error 429"
                     except (TimeoutException, StaleElementReferenceException):
                         print("One of the elements couldn't be downloaded")
                         TestClass.number_of_downloaded_beatmapsets -= 1
