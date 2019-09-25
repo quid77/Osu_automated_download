@@ -83,7 +83,7 @@ class TestClass(unittest.TestCase):
                                          "//a[contains(text(),'Any')]").click()
             print("Couldn't locate \"%s\" category, trying alternative method\nContinuing" % Category)
 
-        # Wait until website loads and sorts at least first 16 elements before proceeding with downloads
+        # Wait until website loads at least first 16 elements before proceeding with downloads
         element_number = driver.find_elements_by_xpath("//div[@class='beatmapset-panel__difficulties']")
         WebDriverWait(driver, 3).until(lambda _: len(element_number) >= 16)
         time.sleep(3)
@@ -118,7 +118,7 @@ class TestClass(unittest.TestCase):
                         # driver.switch_to.window(driver.window_handles[0])  # causes to run in foreground...
                         driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  # doesnt switch focus back
                         # driver.execute_script("arguments[0].click();", download_button)  # bypass to "click()" element, not applicable in real testing
-                        time.sleep(1.5)  # to avoid "too many requests error 429"
+                        time.sleep(2)  # sadly, anything below that will trigger "too many requests error 429"
                     except (TimeoutException, StaleElementReferenceException):
                         print("One of the elements couldn't be downloaded")
                         TestClass.number_of_downloaded_beatmapsets -= 1
@@ -130,6 +130,7 @@ class TestClass(unittest.TestCase):
 
     @classmethod
     def reload_and_continue(self):
+        print("reload and continue")
         driver = self.driver
         downloads_done()
         driver.refresh()
@@ -163,6 +164,7 @@ class TestClass(unittest.TestCase):
 
 
 def downloads_done():
+    print("downloads_done")
     for file_name in os.listdir(download_path):
         if file_name.endswith(".crdownload" or ".part"):  # ".crdownload" for Chrome files ".part" for Firefox
             time.sleep(3)
