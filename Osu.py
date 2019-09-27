@@ -3,9 +3,6 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver import ActionChains
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 import unittest
 import time
 import sys
@@ -29,7 +26,7 @@ class Categories(Enum):
 download_path = "H:\\uTORRENT\\OSU!songs"  # directory for downloads
 beatmap_difficulty = 4.5  # difficulty above which beatmapsets containing said beatmap will be downloaded
 beatmapsets_to_search = 15000  # number of beatmapsets to examine if they are suitable for download
-Category = "Ranked"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
+Category = "Graveyard"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
 Favourites = 4  # number of times beatmapset has been favourited by different players (how liked it is)
 
 
@@ -78,7 +75,6 @@ class TestClass(unittest.TestCase):
             driver.find_element_by_xpath("//span[contains(text(), 'Categories') or contains(text(), 'Kategorie')]"
                                          "//following::a[%s]" % TestClass.Category_nr).click()
         except (TypeError, TimeoutException, NoSuchElementException):
-            # print(e.__doc__)
             driver.find_element_by_xpath("//div[@class='beatmapsets-search-filter'][3]"
                                          "//a[contains(text(),'Any')]").click()
             print("Couldn't locate \"%s\" category, trying alternative method\nContinuing" % Category)
@@ -104,20 +100,14 @@ class TestClass(unittest.TestCase):
         ancestor = driver.find_elements_by_xpath(
             "//div[@class='beatmapset-panel__difficulties']//div[@data-stars>'%s']//ancestor::div[6]" % beatmap_difficulty)  # backtrack to the whole element, not just single beatmap (from this level i can easily navigate to buttons like "download" or "play")
         for each_element in ancestor:
-            beatmapset_name = each_element.find_element_by_xpath(".//*[contains(@class,'u-ellipsis-overflow b')]").text   # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
+            beatmapset_name = each_element.find_element_by_xpath(".//*[contains(@class,'u-ellipsis-overflow b')]").text  # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
             if beatmapset_name not in TestClass.list_of_beatmapsets:  # because some songs can have more than one beatmap above 4.5 stars i don't want to include/download them twice
                 how_liked = each_element.find_element_by_xpath(".//*[contains(@title,'Favourites:')]//span[@class='beatmapset-panel__count-number']").text
                 if int(how_liked.replace(",", "")) >= Favourites:
                     TestClass.list_of_beatmapsets.append(beatmapset_name)
-                    # download_button = each_element.find_element_by_xpath(".//i[@class='fas fa-lg fa-download']")
                     download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]").get_attribute('href')
                     try:
-                        # ActionChains(driver).key_down(Keys.CONTROL).click(download_button).key_up(Keys.CONTROL).perform()  # runs in foreground + arbitrary scrolling
-                        # download_button.send_keys(Keys.CONTROL + Keys.RETURN)  # causes arbitrary page scrolling
-                        # driver.execute_script("window.open('%s', 'new_window')" % download_button)  # doesnt switch focus back
-                        # driver.switch_to.window(driver.window_handles[0])  # causes to run in foreground...
-                        driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  # doesnt switch focus back
-                        # driver.execute_script("arguments[0].click();", download_button)  # bypass to "click()" element, not applicable in real testing
+                        driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  #  opening new window and downloading file there, to prevent constant switching of focus to foreground
                         time.sleep(2)  # sadly, anything below that will trigger "too many requests error 429"
                     except (TimeoutException, StaleElementReferenceException):
                         print("One of the elements couldn't be downloaded")
