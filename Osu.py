@@ -107,7 +107,7 @@ class TestClass(unittest.TestCase):
             beatmapset_name = each_element.find_element_by_xpath(".//*[contains(@class,'u-ellipsis-overflow b')]").text   # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
             if beatmapset_name not in TestClass.list_of_beatmapsets:  # because some songs can have more than one beatmap above 4.5 stars i don't want to include/download them twice
                 how_liked = each_element.find_element_by_xpath(".//*[contains(@title,'Favourites:')]//span[@class='beatmapset-panel__count-number']").text
-                if int(how_liked) >= Favourites:
+                if int(how_liked.replace(",", "")) >= Favourites:
                     TestClass.list_of_beatmapsets.append(beatmapset_name)
                     # download_button = each_element.find_element_by_xpath(".//i[@class='fas fa-lg fa-download']")
                     download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]").get_attribute('href')
