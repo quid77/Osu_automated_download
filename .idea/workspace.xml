@@ -2,7 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="305cc951-a49b-4989-bc0d-c383ba15e8b8" name="Default Changelist" comment="">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/Osu.py" beforeDir="false" afterPath="$PROJECT_DIR$/Osu.py" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< HEAD
+      <change beforePath="$PROJECT_DIR$/Osu.py" beforeDir="false" afterPath="$PROJECT_DIR$/Osu.py" afterDir="false" />
+=======
+>>>>>>> development
+>>>>>>> 5269a4df3f02d1130dd142349e29e5c17c8450e9
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,8 +23,17 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Osu.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="1411">
               <caret line="125" column="66" selection-start-line="125" selection-start-column="66" selection-end-line="125" selection-end-column="66" />
+=======
+<<<<<<< HEAD
+            <state relative-caret-position="1309">
+              <caret line="77" selection-start-line="77" selection-end-line="77" />
+=======
+            <state relative-caret-position="259">
+              <caret line="123" column="50" selection-start-line="123" selection-start-column="50" selection-end-line="123" selection-end-column="50" />
+>>>>>>> 5269a4df3f02d1130dd142349e29e5c17c8450e9
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -29,6 +46,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="303">
               <caret line="55" column="89" selection-start-line="55" selection-start-column="77" selection-end-line="55" selection-end-column="89" />
+>>>>>>> development
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -190,8 +208,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Osu.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="1411">
           <caret line="125" column="66" selection-start-line="125" selection-start-column="66" selection-end-line="125" selection-end-column="66" />
+=======
+<<<<<<< HEAD
+        <state relative-caret-position="1309">
+          <caret line="77" selection-start-line="77" selection-end-line="77" />
+=======
+        <state relative-caret-position="259">
+          <caret line="123" column="50" selection-start-line="123" selection-start-column="50" selection-end-line="123" selection-end-column="50" />
+>>>>>>> development
+>>>>>>> 5269a4df3f02d1130dd142349e29e5c17c8450e9
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
