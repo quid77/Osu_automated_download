@@ -108,13 +108,10 @@ class TestClass(unittest.TestCase):
                 how_liked = each_element.find_element_by_xpath(".//*[contains(@title,'Favourites:')]//span[@class='beatmapset-panel__count-number']").text
                 if int(how_liked.replace(",", "")) >= Favourites:
                     TestClass.list_of_beatmapsets.append(beatmapset_name)
+                    # download_button = each_element.find_element_by_xpath(".//i[@class='fas fa-lg fa-download']")
                     download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]").get_attribute('href')
                     try:
-<<<<<<< HEAD
                         driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  #  best way to prevent window from switching focus to foreground (that way it can run in bg)
-=======
-                        driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  #  opening new window and downloading file there, to prevent constant switching of focus to foreground
->>>>>>> 5269a4df3f02d1130dd142349e29e5c17c8450e9
                         time.sleep(2)  # sadly, anything below that will trigger "too many requests error 429"
                     except (TimeoutException, StaleElementReferenceException):
                         print("One of the elements couldn't be downloaded")
