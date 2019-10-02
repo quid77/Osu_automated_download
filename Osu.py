@@ -3,9 +3,6 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver import ActionChains
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 import unittest
 import time
 import sys
@@ -78,7 +75,6 @@ class TestClass(unittest.TestCase):
             driver.find_element_by_xpath("//span[contains(text(), 'Categories') or contains(text(), 'Kategorie')]"
                                          "//following::a[%s]" % TestClass.Category_nr).click()
         except (TypeError, TimeoutException, NoSuchElementException):
-            # print(e.__doc__)
             driver.find_element_by_xpath("//div[@class='beatmapsets-search-filter'][3]"
                                          "//a[contains(text(),'Any')]").click()
             print("Couldn't locate \"%s\" category, trying alternative method\nContinuing" % Category)
@@ -86,14 +82,14 @@ class TestClass(unittest.TestCase):
         # Wait until website loads at least first 16 elements before proceeding with downloads
         element_number = driver.find_elements_by_xpath("//div[@class='beatmapset-panel__difficulties']")
         WebDriverWait(driver, 3).until(lambda _: len(element_number) >= 16)
-        time.sleep(3)
+        time.sleep(3)  # just waiting alone, doesnt do the trick as i still need to wait for them to sort...
         for x in range(round(beatmapsets_to_search/2)):
             try:
                 TestClass.search_for_beatmapsets()
-            except (TimeoutException, StaleElementReferenceException, NoSuchElementException):  # scrolls to the last element if error/timeout occurs mid-download
+            except (TimeoutException, StaleElementReferenceException, NoSuchElementException):
                 try:
                     TestClass.search_for_beatmapsets()
-                except (TimeoutException, StaleElementReferenceException, NoSuchElementException):
+                except (TimeoutException, StaleElementReferenceException, NoSuchElementException):  # scrolls to the last element if error/timeout occurs mid-download
                     TestClass.reload_and_continue()  # if exception keeps reoccuring, we have no choice but to refresh the page
         TestClass.number_of_downloaded_beatmapsets += len(TestClass.list_of_beatmapsets)
         print("Number of downloaded beatmapsets: %s" % TestClass.number_of_downloaded_beatmapsets)
@@ -107,7 +103,7 @@ class TestClass(unittest.TestCase):
         ancestor = driver.find_elements_by_xpath(
             "//div[@class='beatmapset-panel__difficulties']//div[@data-stars>'%s']//ancestor::div[6]" % beatmap_difficulty)  # backtrack to the whole element, not just single beatmap (from this level i can easily navigate to buttons like "download" or "play")
         for each_element in ancestor:
-            beatmapset_name = each_element.find_element_by_xpath(".//*[contains(@class,'u-ellipsis-overflow b')]").text   # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
+            beatmapset_name = each_element.find_element_by_xpath(".//*[contains(@class,'u-ellipsis-overflow b')]").text  # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
             if beatmapset_name not in TestClass.list_of_beatmapsets:  # because some songs can have more than one beatmap above 4.5 stars i don't want to include/download them twice
                 how_liked = each_element.find_element_by_xpath(".//*[contains(@title,'Favourites:')]//span[@class='beatmapset-panel__count-number']").text
                 if int(how_liked.replace(",", "")) >= Favourites:
@@ -115,12 +111,7 @@ class TestClass(unittest.TestCase):
                     # download_button = each_element.find_element_by_xpath(".//i[@class='fas fa-lg fa-download']")
                     download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]").get_attribute('href')
                     try:
-                        # ActionChains(driver).key_down(Keys.CONTROL).click(download_button).key_up(Keys.CONTROL).perform()  # runs in foreground + arbitrary scrolling
-                        # download_button.send_keys(Keys.CONTROL + Keys.RETURN)  # causes arbitrary page scrolling
-                        # driver.execute_script("window.open('%s', 'new_window')" % download_button)  # doesnt switch focus back
-                        # driver.switch_to.window(driver.window_handles[0])  # causes to run in foreground...
-                        driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  # doesnt switch focus back
-                        # driver.execute_script("arguments[0].click();", download_button)  # bypass to "click()" element, not applicable in real testing
+                        driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  #  best way to prevent window from switching focus to foreground (that way it can run in bg)
                         time.sleep(2)  # sadly, anything below that will trigger "too many requests error 429"
                     except (TimeoutException, StaleElementReferenceException):
                         print("One of the elements couldn't be downloaded")
@@ -132,7 +123,7 @@ class TestClass(unittest.TestCase):
         TestClass.page_scroll_times += 1
 
     @classmethod
-    def reload_and_continue(self):
+    def reload_and_continue(self):  # refresh page and scroll down
         print("reload and continue")
         driver = self.driver
         downloads_done()
