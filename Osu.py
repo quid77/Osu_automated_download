@@ -87,7 +87,10 @@ class TestClass(unittest.TestCase):
             try:
                 TestClass.search_for_beatmapsets()
             except (TimeoutException, StaleElementReferenceException, NoSuchElementException):  # scrolls to the last element if error/timeout occurs mid-download
-                TestClass.reload_and_continue()
+                try:
+                    TestClass.search_for_beatmapsets()
+                except (TimeoutException, StaleElementReferenceException, NoSuchElementException):
+                    TestClass.reload_and_continue()  # if exception keeps reoccuring, we have no choice but to refresh the page
         TestClass.number_of_downloaded_beatmapsets += len(TestClass.list_of_beatmapsets)
         print("Number of downloaded beatmapsets: %s" % TestClass.number_of_downloaded_beatmapsets)
 
@@ -133,7 +136,7 @@ class TestClass(unittest.TestCase):
             pass
         for y in range(TestClass.page_scroll_times):
             try:
-                WebDriverWait(element_number, 0.3).until(lambda _: len(element_number) >= 26)
+                WebDriverWait(element_number, 0.2).until(lambda _: len(element_number) >= 26)
             except TimeoutException:
                 pass
             finally:
@@ -143,6 +146,7 @@ class TestClass(unittest.TestCase):
     def tearDownClass(cls):
         print("Searching finished, waiting for all downloads to complete...")
         downloads_done()
+        print("Number of downloaded beatmapsets: %s" % TestClass.number_of_downloaded_beatmapsets)
         cls.driver.close()
 
 
