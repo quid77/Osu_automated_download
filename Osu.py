@@ -19,7 +19,7 @@ Category = "Graveyard"  # from which category said beatmapsets should be downloa
 Favourites = 4  # number of times beatmapset has been favourited by different players (how liked it is)           #
 
 
-class Categories(Enum):  # "Legend" also allows to assign number to each word, so we can use it in [] later
+class Categories(Enum):  # Also used as "Legend" for above Category section
     Any = 1
     Leaderboard = 2
     Ranked = 3
@@ -137,7 +137,7 @@ class TestClass(unittest.TestCase):
             pass
         for y in range(TestClass.page_scroll_times):
             try:
-                WebDriverWait(element_number, 0.2).until(lambda _: len(element_number) >= 26)
+                WebDriverWait(element_number, 0.25).until(lambda _: len(element_number) >= 26)
             except TimeoutException:
                 pass
             finally:
