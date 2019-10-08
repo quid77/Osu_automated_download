@@ -13,7 +13,18 @@ from enum import Enum
 from selenium.webdriver.common.keys import Keys
 
 
-class Categories(Enum):
+#                                           PATHS AND VALUES FOR CHANGE                                           #
+#             Only edit right side of the equation of below 5 lines unless you know what you are doing            #
+
+
+download_path = "H:\\uTORRENT\\OSU!songs"  # directory for downloads
+beatmap_difficulty = 4.5  # difficulty above which beatmapsets containing said beatmap will be downloaded
+beatmapsets_to_search = 15000  # number of beatmapsets to examine if they are suitable for download
+Category = "Graveyard"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
+Favourites = 4  # number of times beatmapset has been favourited by different players (how liked it is)
+
+
+class Categories(Enum):  # Also used as "Legend" for above categories
     Any = 1
     Leaderboard = 2
     Ranked = 3
@@ -23,14 +34,6 @@ class Categories(Enum):
     Pending = 7
     Graveyard = 8
     My = 9
-
-#                                           PATHS AND VALUES FOR CHANGE                                           #
-
-download_path = "H:\\uTORRENT\\OSU!songs"  # directory for downloads
-beatmap_difficulty = 4.5  # difficulty above which beatmapsets containing said beatmap will be downloaded
-beatmapsets_to_search = 15000  # number of beatmapsets to examine if they are suitable for download
-Category = "Graveyard"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
-Favourites = 4  # number of times beatmapset has been favourited by different players (how liked it is)
 
 
 class TestClass(unittest.TestCase):
@@ -80,7 +83,7 @@ class TestClass(unittest.TestCase):
         except (TypeError, TimeoutException, NoSuchElementException):
             # print(e.__doc__)
             driver.find_element_by_xpath("//div[@class='beatmapsets-search-filter'][3]"
-                                         "//a[contains(text(),'Any')]").click()
+                                         "//a[contains(text(),'%s')]" % Category).click()
             print("Couldn't locate \"%s\" category, trying alternative method\nContinuing" % Category)
 
         # Wait until website loads at least first 16 elements before proceeding with downloads
