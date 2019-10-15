@@ -19,7 +19,7 @@ from selenium.webdriver.common.keys import Keys
 
 download_path = "H:\\uTORRENT\\OSU!songs"  # directory for downloads
 beatmap_difficulty = 4.5  # difficulty above which beatmapsets containing said beatmap will be downloaded
-beatmapsets_to_search = 15000  # number of beatmapsets to examine if they are suitable for download
+beatmapsets_to_search = 50000  # number of beatmapsets to examine if they are suitable for download
 Category = "Graveyard"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
 Favourites = 4  # number of times beatmapset has been favourited by different players (how liked it is)
 
@@ -105,7 +105,7 @@ class TestClass(unittest.TestCase):
     # if more than 16 pairs are loaded the oldest (top) pair in our list unloads to make space for a new one
 
     @classmethod
-    def search_for_beatmapsets(self):
+    def search_for_beatmapsets(self):  # 200 downloads (per acc), 30min timeout || every hour 200 dl slots per acc?
         driver = self.driver
         ancestor = driver.find_elements_by_xpath(
             "//div[@class='beatmapset-panel__difficulties']//div[@data-stars>'%s']//ancestor::div[6]" % beatmap_difficulty)  # backtrack to the whole element, not just single beatmap (from this level i can easily navigate to buttons like "download" or "play")
@@ -129,7 +129,7 @@ class TestClass(unittest.TestCase):
                         print("One of the elements couldn't be downloaded")
                         TestClass.number_of_downloaded_beatmapsets -= 1
                         TestClass.list_of_beatmapsets.pop()
-                    print(TestClass.list_of_beatmapsets)
+                    print(len(TestClass.list_of_beatmapsets), TestClass.list_of_beatmapsets)
         print("page scroll times %s" % TestClass.page_scroll_times)
         driver.execute_script("window.scrollBy(0,205)", "")  # 205 is the exact height of one pair of elements
         TestClass.page_scroll_times += 1
@@ -149,7 +149,7 @@ class TestClass(unittest.TestCase):
             pass
         for y in range(TestClass.page_scroll_times):
             try:
-                WebDriverWait(element_number, 0.2).until(lambda _: len(element_number) >= 26)
+                WebDriverWait(element_number, 0.3).until(lambda _: len(element_number) >= 26)
             except TimeoutException:
                 pass
             finally:
