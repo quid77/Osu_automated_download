@@ -19,7 +19,7 @@ from selenium.webdriver.common.keys import Keys
 
 download_path = "H:\\uTORRENT\\OSU!songs"  # directory for downloads
 beatmap_difficulty = 4.5  # difficulty above which beatmapsets containing said beatmap will be downloaded
-beatmapsets_to_search = 50000  # number of beatmapsets to examine if they are suitable for download
+beatmapsets_to_search = 300  # number of beatmapsets to examine if they are suitable for download
 Category = "Graveyard"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
 Favourites = 4  # number of times beatmapset has been favourited by different players (how liked it is)
 
@@ -44,7 +44,7 @@ class TestClass(unittest.TestCase):
     list_of_beatmapsets = []  # list of beatmapsets which have at least one beatmap with certain difficulty
 
     @classmethod
-    def setUpClass(cls):   # setUpClass runs once for ALL tests instead of EVERY
+    def setUpClass(cls):   # setUpClass runs once for ALL tests
         options = webdriver.ChromeOptions()
         preferences = {"download.default_directory": download_path, "download.prompt_for_download": "false",
                        "safebrowsing.enabled": "false", 'profile.default_content_setting_values.automatic_downloads': 1}
@@ -52,8 +52,8 @@ class TestClass(unittest.TestCase):
         cls.driver = webdriver.Chrome(options=options)
 
     @classmethod
-    def test_osu_download(self):
-        driver = self.driver
+    def test_osu_download(cls):
+        driver = cls.driver
         driver.implicitly_wait(5)
         driver.get("https://osu.ppy.sh/home")
         try:
@@ -105,13 +105,13 @@ class TestClass(unittest.TestCase):
     # if more than 16 pairs are loaded the oldest (top) pair in our list unloads to make space for a new one
 
     @classmethod
-    def search_for_beatmapsets(self):  # 200 downloads (per acc), 30min timeout || every hour 200 dl slots per acc?
-        driver = self.driver
+    def search_for_beatmapsets(cls):  # site allows only 200 downloads (per acc) resetting every hour
+        driver = cls.driver
         ancestor = driver.find_elements_by_xpath(
             "//div[@class='beatmapset-panel__difficulties']//div[@data-stars>'%s']//ancestor::div[6]" % beatmap_difficulty)  # backtrack to the whole element, not just single beatmap (from this level i can easily navigate to buttons like "download" or "play")
         for each_element in ancestor:
             beatmapset_name = each_element.find_element_by_xpath(".//*[contains(@class,'u-ellipsis-overflow b')]").text   # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
-            if beatmapset_name not in TestClass.list_of_beatmapsets:  # because some songs can have more than one beatmap above 4.5 stars i don't want to include/download them twice
+            if beatmapset_name not in TestClass.list_of_beatmapsets:  # because some packs can have more than one beatmap above 4.5 stars i don't want to include/download them twice
                 how_liked = each_element.find_element_by_xpath(".//*[contains(@title,'Favourites:')]//span[@class='beatmapset-panel__count-number']").text
                 if int(how_liked.replace(",", "")) >= Favourites:
                     TestClass.list_of_beatmapsets.append(beatmapset_name)
@@ -124,7 +124,7 @@ class TestClass(unittest.TestCase):
                         # driver.switch_to.window(driver.window_handles[0])  # causes to run in foreground...
                         driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  # doesnt switch focus back
                         # driver.execute_script("arguments[0].click();", download_button)  # bypass to "click()" element, not applicable in real testing
-                        time.sleep(2)  # sadly, anything below that will trigger "too many requests error 429"
+                        time.sleep(5)  # sadly, anything below that will trigger "too many requests error 429"
                     except (TimeoutException, StaleElementReferenceException):
                         print("One of the elements couldn't be downloaded")
                         TestClass.number_of_downloaded_beatmapsets -= 1
@@ -135,9 +135,9 @@ class TestClass(unittest.TestCase):
         TestClass.page_scroll_times += 1
 
     @classmethod
-    def reload_and_continue(self):
+    def reload_and_continue(cls):
         print("reload and continue")
-        driver = self.driver
+        driver = cls.driver
         downloads_done()
         driver.refresh()
         driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
