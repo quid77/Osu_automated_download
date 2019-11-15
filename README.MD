@@ -1,6 +1,6 @@
 # Automated download for Osu!mania beatmapsets
 
-### To run script, install requests, set below conditions in 'Paths' file and run the script using 'python TestRunner.py'
+### To run script, install requirements, set below conditions in 'Paths' file and run the script using 'python TestRunner.py' command in the console
 
 This script allows for search and download of beatmapsets based on conditions:
 - category (eg. "All", "Ranked", etc.)
