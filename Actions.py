@@ -2,12 +2,10 @@ import os
 from selenium.webdriver.support.ui import WebDriverWait
 import sys
 from selenium.webdriver.common.keys import Keys
-import unittest
 import time
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.common.exceptions import NoSuchElementException
 import Paths
-from Paths import Categories
 
 
 user_login = ["tmpname222", "whythisagain77", "placeholder221"]
@@ -113,18 +111,12 @@ def search_for_beatmapsets(self, start_number, modulo_number):
                 self.downloaded_beatmapsets.append(beatmapset_name)
                 download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]").get_attribute('href')
                 try:
-                    # ActionChains(driver).key_down(Keys.CONTROL).click(download_button).key_up(Keys.CONTROL).perform()  # runs in foreground + arbitrary scrolling
-                    # download_button.send_keys(Keys.CONTROL + Keys.RETURN)  # causes arbitrary page scrolling
-                    # driver.execute_script("window.open('%s', 'new_window')" % download_button)  # doesnt switch focus back
-                    # driver.switch_to.window(driver.window_handles[0])  # causes to run in foreground...
-                    driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)  # doesnt switch focus back
-                    # driver.execute_script("arguments[0].click();", download_button)  # bypass to "click()" element, not applicable in real testing
+                    driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)
                     time.sleep(5)  # sadly, anything below that will trigger "too many requests error 429"
                 except (TimeoutException, StaleElementReferenceException):
                     print("One of the elements couldn't be downloaded")
                     self.downloaded_beatmapsets.pop()
                 print(len(self.downloaded_beatmapsets), self.downloaded_beatmapsets)
-    # print("page scroll times %s" % self.page_scroll_times)
     driver.execute_script("window.scrollBy(0,205)", "")  # 205 is the exact height of one pair of elements
     self.page_scroll_times += 1
 
