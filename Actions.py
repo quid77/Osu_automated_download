@@ -1,8 +1,8 @@
 import os
-from selenium.webdriver.support.ui import WebDriverWait
 import sys
-from selenium.webdriver.common.keys import Keys
 import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.common.exceptions import NoSuchElementException
 import Paths
