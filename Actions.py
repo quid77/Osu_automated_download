@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.common.exceptions import NoSuchElementException
 import Paths
+from Paths import Categories
 
 
 user_login = ["tmpname222", "whythisagain77", "placeholder221"]
@@ -49,12 +50,12 @@ def choose_category(self):
     driver = self.driver
     try:
         driver.find_element_by_xpath(
-            "//img[@class='nav2__locale-current-flag' or @class='nav-button__locale-current-flag'"
+            "//span[@class='nav2__locale-current-flag' or @class='nav-button__locale-current-flag'"
             " and @src='/images/flags/GB.png']")
     except NoSuchElementException:
-        driver.find_element_by_xpath("//img[@class='nav2__locale-current-flag' or "
+        driver.find_element_by_xpath("//span[@class='nav2__locale-current-flag' or "
                                      "@class='nav-button__locale-current-flag']").click()
-        driver.find_element_by_xpath("//span[@class='nav2-locale-item']//img[@src='/images/flags/GB.png']").click()
+        driver.find_element_by_xpath("//span[@class='nav2-locale-item']//div[contains(@style, 'images/flags/GB.png')]").click()
     try:
         driver.find_element_by_xpath("//a[contains(text(),'modding watchlist') or contains(text(),'obserwowane dyskusje')]")
     except (TimeoutException, NoSuchElementException):
@@ -112,7 +113,7 @@ def search_for_beatmapsets(self, start_number, modulo_number):
                 download_button = each_element.find_element_by_xpath(".//a[contains(@href, '/download') and contains(@href,'/beatmapsets/')]").get_attribute('href')
                 try:
                     driver.execute_script("window.open('%s', 'name', 'height=400,width=400')" % download_button)
-                    time.sleep(5)  # sadly, anything below that will trigger "too many requests error 429"
+                    time.sleep(7)  # sadly, anything below that will trigger "too many requests error 429"
                 except (TimeoutException, StaleElementReferenceException):
                     print("One of the elements couldn't be downloaded")
                     self.downloaded_beatmapsets.pop()
@@ -135,7 +136,7 @@ def reload_and_continue(self):
         pass
     for y in range(self.page_scroll_times):
         try:
-            WebDriverWait(element_number, 0.4).until(lambda _: len(element_number) >= 26)
+            WebDriverWait(element_number, 0.5).until(lambda _: len(element_number) >= 26)
         except TimeoutException:
             pass
         finally:
