@@ -9,5 +9,5 @@ six==1.13.0
 testtools==2.3.0
 traceback2==1.4.0
 unittest2==1.1.0
-urllib3==1.25.7
+urllib3==1.25.8
 wincertstore==0.2
