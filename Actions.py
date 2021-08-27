@@ -9,8 +9,8 @@ import Paths
 from Paths import Categories
 
 
-user_login = ["tmpname222", "whythisagain77", "placeholder221"]
-user_password = ["ffsjustletme", "1234512345", "dontlookhere"]
+user_login = ["temposumail777", "temposumail778", "temposumail779"]
+user_password = ["5lazzjdzZ", "5lazzjdzZ", "5lazzjdzZ"]
 
 Category_nr = eval("Categories." + Paths.category + ".value")
 
@@ -57,7 +57,7 @@ def choose_category(self):
                                      "@class='nav-button__locale-current-flag']").click()
         driver.find_element_by_xpath("//span[@class='nav2-locale-item']//div[contains(@style, 'images/flags/GB.png')]").click()
     try:
-        driver.find_element_by_xpath("//a[contains(text(),'modding watchlist') or contains(text(),'obserwowane dyskusje')]")
+        driver.find_element_by_xpath("//span[@class='notification-icon']")
     except (TimeoutException, NoSuchElementException):
         print("Couldn't ensure successful login, perhaps website language is not set to English or Polish?")
         sys.exit()
@@ -99,12 +99,12 @@ def run_script(self, start_number, modulo_number):
 
 def search_for_beatmapsets(self, start_number, modulo_number):
     driver = self.driver
-    ancestor = driver.find_elements_by_xpath(
-        "//div[@class='beatmapset-panel__difficulties']//div[@data-stars>'%s']//ancestor::div[6]" % Paths.beatmap_difficulty)  # backtrack to the whole element, not just single beatmap (from this level i can easily navigate to buttons like "download" or "play")
-    for each_element in ancestor:
-        beatmapset_name = each_element.find_element_by_xpath(".//*[contains(@class,'u-ellipsis-overflow b')]").text   # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
+    driver.find_element_by_xpath("//span[@class='fas fa-th-large']").click()
+    mania_insane_and_above_beatmapsets = driver.find_elements_by_xpath("//i[@class='fal fa-extra-mode-mania']//ancestor::div[contains(@class,'beatmapset-panel__extra-item')]//div[contains(@style, 'insane') or contains(@style, 'expert')]//ancestor::div[@class='beatmapsets__item']")
+    for each_element in mania_insane_and_above_beatmapsets:
+        beatmapset_name = each_element.find_element_by_xpath(".//*[contains(@class,'beatmapset-panel__info-row--title')]/a").text   # using above element as reference, i can navigate towards its name (i.e. name of the song/beatmapset)
         if beatmapset_name not in self.list_of_beatmapsets:  # because some packs can have more than one beatmap above 4.5 stars i don't want to include/download them twice
-            how_liked = each_element.find_element_by_xpath(".//*[contains(@title,'Favourites:')]//span[@class='beatmapset-panel__count-number']").text
+            how_liked = each_element.find_element_by_xpath(".//div[contains(@class,'beatmapset-panel__stats-item--favourite-count')]/span[2]").text
             if int(how_liked.replace(",", "")) >= Paths.favourites:
                 self.list_of_beatmapsets.append(beatmapset_name)
                 if (len(self.list_of_beatmapsets) - 1) % modulo_number != start_number - 1:

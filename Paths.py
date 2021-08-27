@@ -7,7 +7,7 @@ from enum import Enum
 
 download_path = "H:\\uTORRENT\\OSU!songs"  # directory for downloads
 beatmap_difficulty = 4.5  # difficulty above which beatmapsets containing said beatmap will be downloaded
-beatmapsets_to_search = 15000  # number of beatmapsets to examine if they are suitable for download
+beatmapsets_to_search = 25000  # number of beatmapsets to examine if they are suitable for download
 category = "Graveyard"  # from which category said beatmapsets should be downloaded (Any, Ranked, Graveyard, etc.)
 favourites = 3  # number of times beatmapset has been favourited by different players (how liked it is)
 

@@ -1,3 +1,4 @@
+### Script is outdated after recent osu! website update, needs to be completely rewritten, leaving this code just so i don't lose it
 # Automated download for Osu!mania beatmapsets
 
 ### To run script, install requirements, set below conditions in 'Paths' file and run the script using 'python TestRunner.py' command in the console
