@@ -15,6 +15,7 @@ Set above options and run the script, only beatmapsets that fulfil every above c
 
 Due to nature of the website, faster downloading is not possible as you will get error 429 (too many requests), which once triggered will time out the script for 10min. Number of downloaded beatmapsets is also time-gated, each hour you can download up to 200 beatmapsets. This time-gate seems to be tied to currently logged-on user account.
 
+
 ### TODO:
 - <s> parallel test execution with multiple users logged-on to bypass 200downloads/hour limit. </s>
 - Refactoring, QoL improvements
