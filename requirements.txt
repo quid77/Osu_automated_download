@@ -1,4 +1,4 @@
-certifi==2019.9.11
+certifi==2022.12.7
 extras==1.0.0
 fixtures==3.0.0
 linecache2==1.0.0
